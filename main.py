@@ -16,7 +16,7 @@ class Item(BaseModel):
 
 @app.get("/")
 def root():
-    return {"message": "Hello, World!"}
+    return {"docs": "/docs"}
 
 
 @app.get("/health")
