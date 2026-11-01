@@ -15,7 +15,7 @@ have one, install the dependencies, and start the development server:
 
 ```powershell
 py -m venv .venv
-.\.venv\Scripts\python.exe -m pip install fastapi uvicorn
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
 .\.venv\Scripts\python.exe -m uvicorn main:app --reload
 ```
 
@@ -41,6 +41,7 @@ assets.
 | Method | Path | Description |
 | --- | --- | --- |
 | `GET` | `/` | Returns a welcome message. |
+| `GET` | `/health` | Liveness probe for the hosting platform. |
 | `POST` | `/items` | Adds an item from a JSON request body. |
 | `GET` | `/items?limit=10` | Returns up to `limit` items (10 by default). |
 | `GET` | `/items/{item_id}` | Returns the item at a zero-based list index. |
@@ -106,3 +107,62 @@ subsequent items, since IDs are zero-based positions in the in-memory list.
 
 Items are kept in memory while the server is running. They are cleared when the
 server restarts; this example does not save items to a file or database.
+
+> **Production note:** in-memory storage is not durable and is not shared
+> between multiple workers or instances. Render restarts and redeploys clear
+> all items. For durable data, back the CRUD operations with PostgreSQL (for
+> example with SQLAlchemy and Render Postgres) or attach a persistent disk and
+> use SQLite.
+
+## Deploy to Render
+
+The repo includes a `render.yaml` blueprint and a pinned `requirements.txt`, so
+the service can be created from the Render Dashboard or from the blueprint.
+
+### Option A: Render Dashboard (New Web Service)
+
+Use these values when creating the service:
+
+| Setting | Value |
+| --- | --- |
+| Language | `Python 3` |
+| Branch | `main` |
+| Region | `Singapore (Southeast Asia)` |
+| Root Directory | *(leave empty)* |
+| Build Command | `pip install -r requirements.txt` |
+| Start Command | `uvicorn main:app --host 0.0.0.0 --port $PORT` |
+| Health Check Path | `/health` |
+
+Then click **Deploy web service**. The build installs the pinned dependencies
+from `requirements.txt`, and Render supplies the `$PORT` environment variable
+to the start command.
+
+The Python version is pinned to `3.14.8` in `.python-version` (and in
+`render.yaml` via `PYTHON_VERSION`). Change both files to upgrade it.
+
+### Option B: Blueprint
+
+1. Push this repository to GitHub.
+2. In the Render Dashboard, choose **New > Blueprint**.
+3. Select the repository. Render reads `render.yaml` and creates the service
+   with the build command, start command, region, and health check already set.
+
+### Verify the deployment
+
+After the deploy finishes, open the service URL:
+
+- `GET /health` should return `{"status":"ok"}`.
+- `GET /docs` opens the interactive Swagger UI.
+- `GET /` should return `{"message":"Hello, World!"}`.
+
+Example against the live service:
+
+```powershell
+curl.exe "https://<your-service>.onrender.com/health"
+curl.exe -X POST "https://<your-service>.onrender.com/items" -H "Content-Type: application/json" -d '{"text":"apple"}'
+curl.exe "https://<your-service>.onrender.com/items"
+```
+
+Free instances spin down after a period of inactivity, so the first request
+after idle time may take several seconds while the instance starts.
+

@@ -1,7 +1,11 @@
 from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel
 
-app = FastAPI()
+app = FastAPI(
+    title="FastAPI Items API",
+    version="1.0.0",
+    description="A small CRUD API for managing items.",
+)
 
 items: list["Item"] = []
 
@@ -13,6 +17,12 @@ class Item(BaseModel):
 @app.get("/")
 def root():
     return {"message": "Hello, World!"}
+
+
+@app.get("/health")
+def health() -> dict[str, str]:
+    """Liveness probe used by Render health checks."""
+    return {"status": "ok"}
 
 
 @app.post("/items")
