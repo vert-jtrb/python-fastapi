@@ -1,7 +1,7 @@
 # FastAPI Items API
 
 <p align="center">
-  <img src="docs/thumbnail.png" alt="FastAPI Items API thumbnail" width="800">
+  <img src="https://github.com/vertsan/python-fastapi/blob/main/docs/thumbnail.png?raw=true" alt="FastAPI Items API thumbnail" width="800">
 </p>
 
 A small FastAPI CRUD application for creating, viewing, updating, and deleting
