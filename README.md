@@ -122,7 +122,7 @@ update both `.python-version` and the `PYTHON_VERSION` value in `render.yaml`.
 
 | Method | Path | Description |
 | --- | --- | --- |
-| `GET` | `/` | Returns `{"docs": "/docs"}`, a link to the interactive docs. |
+| `GET` | `/` | Redirects to `/docs` (HTTP 307). |
 | `GET` | `/health` | Liveness probe used by Render health checks. |
 | `POST` | `/items` | Adds an item from a JSON request body. Returns the full list. |
 | `GET` | `/items?limit=10` | Returns up to `limit` items (10 by default). |
@@ -244,7 +244,7 @@ to the start command.
 After the deploy finishes, open the service URL:
 
 - `GET /health` should return `{"status":"ok"}`.
-- `GET /` should return `{"docs":"/docs"}`.
+- `GET /` redirects to `/docs` (HTTP 307).
 - `GET /docs` opens the interactive Swagger UI.
 
 Example against the live service:

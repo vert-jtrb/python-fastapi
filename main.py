@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 
 app = FastAPI(
@@ -14,9 +15,10 @@ class Item(BaseModel):
     is_done: bool = False
 
 
-@app.get("/")
-def root():
-    return {"docs": "/docs"}
+@app.get("/", include_in_schema=False)
+def root() -> RedirectResponse:
+    """Redirect the root URL to the interactive API documentation."""
+    return RedirectResponse(url="/docs")
 
 
 @app.get("/health")
