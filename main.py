@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
@@ -10,6 +12,28 @@ app = FastAPI(
 
 items: list["Item"] = []
 
+
+def _docs_redirect_url() -> str:
+    """Return the docs URL to redirect to.
+
+    Priority:
+    1. DOCS_URL, when explicitly configured.
+    2. RENDER_EXTERNAL_URL + /docs, set automatically by Render.
+    3. A relative /docs path for local development.
+    """
+    configured_url = os.getenv("DOCS_URL")
+    if configured_url:
+        return configured_url
+
+    render_url = os.getenv("RENDER_EXTERNAL_URL")
+    if render_url:
+        return f"{render_url.rstrip('/')}/docs"
+
+    return "/docs"
+
+
+DOCS_REDIRECT_URL = _docs_redirect_url()
+
 class Item(BaseModel):
     text: str
     is_done: bool = False
@@ -18,7 +42,7 @@ class Item(BaseModel):
 @app.get("/", include_in_schema=False)
 def root() -> RedirectResponse:
     """Redirect the root URL to the interactive API documentation."""
-    return RedirectResponse(url="/docs")
+    return RedirectResponse(url=DOCS_REDIRECT_URL)
 
 
 @app.get("/health")

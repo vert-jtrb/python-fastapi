@@ -14,3 +14,5 @@ services:
         value: 3.14.8
       - key: ENVIRONMENT
         value: production
+      - key: DOCS_URL
+        value: https://python-fastapi-fhky.onrender.com/docs

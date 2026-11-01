@@ -112,6 +112,14 @@ sets the following automatically or through `render.yaml`:
 | `PORT` | Render | Port the start command binds to. |
 | `PYTHON_VERSION` | `render.yaml` | Pins Python to `3.14.8`. |
 | `ENVIRONMENT` | `render.yaml` | Set to `production` for deployed services. |
+| `DOCS_URL` | `render.yaml` | Absolute docs URL used by the `/` redirect. |
+| `RENDER_EXTERNAL_URL` | Render | Fallback docs base URL when `DOCS_URL` is unset. |
+
+The `/` route redirects to the first available value:
+
+1. `DOCS_URL`, if set (production: `https://python-fastapi-fhky.onrender.com/docs`).
+2. `$RENDER_EXTERNAL_URL/docs`, which Render provides automatically.
+3. `/docs`, for local development.
 
 The Python version is also pinned in `.python-version`. If you upgrade Python,
 update both `.python-version` and the `PYTHON_VERSION` value in `render.yaml`.
@@ -122,7 +130,7 @@ update both `.python-version` and the `PYTHON_VERSION` value in `render.yaml`.
 
 | Method | Path | Description |
 | --- | --- | --- |
-| `GET` | `/` | Redirects to `/docs` (HTTP 307). |
+| `GET` | `/` | Redirects to the docs URL (production: `https://python-fastapi-fhky.onrender.com/docs`; local: `/docs`). |
 | `GET` | `/health` | Liveness probe used by Render health checks. |
 | `POST` | `/items` | Adds an item from a JSON request body. Returns the full list. |
 | `GET` | `/items?limit=10` | Returns up to `limit` items (10 by default). |
@@ -244,7 +252,7 @@ to the start command.
 After the deploy finishes, open the service URL:
 
 - `GET /health` should return `{"status":"ok"}`.
-- `GET /` redirects to `/docs` (HTTP 307).
+- `GET /` redirects to `https://python-fastapi-fhky.onrender.com/docs` (HTTP 307).
 - `GET /docs` opens the interactive Swagger UI.
 
 Example against the live service:
