@@ -1,5 +1,9 @@
 # FastAPI Items API
 
+<p align="center">
+  <img src="docs/thumbnail.png" alt="FastAPI Items API thumbnail" width="800">
+</p>
+
 A small FastAPI CRUD application for creating, viewing, updating, and deleting
 items. Each item has a required `text` field and an optional `is_done` field.
 
@@ -42,6 +46,8 @@ python-cc/
 ├── requirements.txt    # Pinned runtime dependencies for local and Render
 ├── render.yaml         # Render Blueprint (build, start, region, health check)
 ├── .python-version     # Python version used by Render (3.14.8)
+├── docs/
+│   └── thumbnail.png   # README preview image
 ├── README.md           # This document
 └── .gitignore          # Excludes .venv, __pycache__, .env, and tooling output
 ```
